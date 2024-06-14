@@ -71,28 +71,183 @@ class Entrega {
      * Vegeu el mètode Tema1.tests() per exemples.
      */
     static int exercici1(int n) {
-      return 0; // TODO
+      boolean tablaValores [][] = new boolean [dosElevadoA(n)][n];
+        
+        int intercambios = dosElevadoA(n);
+        
+        for (boolean[] fila : tablaValores) {
+            for (int j = 0; j < fila.length; j++) {
+                fila[j] = true;
+            }
+        }
+        
+        for (int i = 0; i < tablaValores[0].length; i++) {
+            intercambios /= 2;
+            int contador = 0;
+            for (boolean[] tablaValore : tablaValores) {
+                tablaValore[i] = contador >= intercambios;
+                contador++;
+                if (contador == 2 * intercambios) {
+                    contador = 0;
+                }
+            }
+        }
+        
+        int numeroTrues = 0;
+        for (boolean[] fila : tablaValores) {
+            boolean resultado = fila[0];
+            for (int j = 0; j < fila.length - 1; j++) {
+                resultado = !(resultado && !fila[j+1]);
+            }
+            if (resultado) {
+                numeroTrues++;
+            }
+        }
+        return numeroTrues;
+    }
+
+    static int dosElevadoA(int n){
+        return 1 << n;
     }
 
     /*
      * És cert que ∀x : P(x) -> ∃!y : Q(x,y) ?
      */
     static boolean exercici2(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
-      return false; // TODO
+      boolean resultado [] = new boolean [universe.length];
+        for (int i = 0; i < universe.length; i++) { //∀x
+            if (p.test(universe[i])) {              //:P(x) == true
+                int existe = 0;
+                
+                for (int j = 0; j < universe.length; j++) {
+                    if (q.test(universe[i], universe[j])) {  //Si ∃y : Q(x,y)
+                        existe++;
+                    }
+                }
+                
+                if (existe == 1) {                  //∃!y : Q(x,y) == true
+                    resultado[i] = true;
+                }else{                              //∃!y : Q(x,y) == false
+                    resultado[i] = false;
+                }
+            }else{                                  //:P(x) == false, sempre es true
+                resultado[i] = true;
+            }
+        }
+        
+        int contadorTrue = 0;
+        for (int i = 0; i < resultado.length; i++) {
+            if (resultado[i]) {
+                contadorTrue++;
+            }
+        }
+        
+        if (contadorTrue == resultado.length) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /*
      * És cert que ∃x : ∀y : Q(x, y) -> P(x) ?
      */
     static boolean exercici3(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
-      return false; // TODO
+        boolean resultado [] = new boolean [universe.length];
+        
+        //Buscamos si existen x tales que ∀y : Q(x, y) -> P(x)
+        for (int i = 0; i < universe.length; i++) {
+            int numeroTrues = 0;
+            for (int j = 0; j < universe.length; j++) {
+                if (q.test(universe[i], universe[j])) {     //Q(x, y) = true
+                    if (p.test(universe[i])) {              //P(x) = true
+                        numeroTrues++;
+                    }                                       //P(x) = false
+                }else{                                      //Q(x, y) = false, entonces siempre es cierto
+                    numeroTrues++;
+                }
+            }
+            if (numeroTrues==universe.length) {             //Si es cierto ∀y dada una x, 
+                resultado[i] = true;
+            }else{
+                resultado[i] = false;
+            }
+        }
+        //Comprobamos cuantas veces es cierto
+        int contadorTrue = 0;
+        for (int i = 0; i < resultado.length; i++) {
+            if (resultado[i]) {
+                contadorTrue++;
+            }
+        }
+        //Es cierto si existe 1 o mas veces
+        if (contadorTrue > 0) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /*
      * És cert que ∃x : ∃!y : ∀z : P(x,z) <-> Q(y,z) ?
      */
     static boolean exercici4(int[] universe, BiPredicate<Integer, Integer> p, BiPredicate<Integer, Integer> q) {
-      return false; // TODO
+        boolean resultadosX [] = new boolean [universe.length];
+        boolean resultadosY [] = new boolean [universe.length];
+        boolean resultadosZ [] = new boolean [universe.length];
+        
+        for (int x = 0; x < universe.length; x++) {
+            for (int y = 0; y < universe.length; y++) {
+                for (int z = 0; z < universe.length; z++) {
+                    if (!p.test(universe[x], universe[z])) {                    //Si P(x,z) = False
+                        if (!q.test(universe[y], universe[z])) {                //Si Q(y,z) = False
+                            resultadosZ[z] = true;
+                        }else{                                                  //Si Q(y,z) = True
+                            resultadosZ[z] = false;
+                        }
+                    }else{                                                      //Si Q(y,z) = True
+                        if (!q.test(universe[y], universe[z])) {                //Si Q(y,z) = False
+                            resultadosZ[z] = false;
+                        }else{                                                  //Si Q(y,z) = True
+                            resultadosZ[z] = true;
+                        }
+                    }
+                }
+                int contadorZ = 0;
+                for (int i = 0; i < universe.length; i++) {
+                    if (resultadosZ[i]) {
+                        contadorZ++;
+                    }
+                }
+                if (contadorZ==universe.length) {                               //Comprobamos que se cumple ∀z
+                    resultadosY[y] = true;
+                }else{
+                    resultadosY[y] = false;
+                }
+            }
+            int contadorY = 0;
+            for (int i = 0; i < universe.length; i++) {
+                if (resultadosY[i]) {
+                    contadorY++;
+                }
+            }
+            if (contadorY==1) {                                                 //Comprobamos que se cumple ∃!y
+                resultadosX[x] = true;
+            }else{
+                resultadosX[x] = false;
+            }
+        }
+        int contadorX = 0;
+        for (int i = 0; i < universe.length; i++) {
+            if (resultadosX[i]) {
+                contadorX++;
+            }
+        }
+        if (contadorX > 0) {                                                    //Comprobamos que se cumple ∃x 1 o mas x
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /*
@@ -203,7 +358,68 @@ class Entrega {
      * Podeu soposar que `a`, `b` i `c` estan ordenats de menor a major.
      */
     static int exercici1(int[] a, int[] b, int[] c) {
-      return -1; // TODO
+        //Calculamos el conjunto de (A U B)
+        
+        //r1 tamaño A + B
+        int r1 [] = new int [(a.length+b.length)];
+        for (int i = 0; i < a.length; i++) {
+            r1[i] = a[i];
+        }
+        //r1 = A
+        
+        //Insertamos B en r1, comprobando si ya está incluido o no
+        int posColocar = a.length;
+        for (int i = 0; i < b.length; i++) {
+            boolean yaEstaIncluido = false;
+            for (int j = 0; j < a.length; j++) {
+                if(b[i]==a[j]){
+                    yaEstaIncluido = true;
+                }
+            }
+            if(!yaEstaIncluido){
+                r1[posColocar] = b[i];
+                posColocar ++;
+            }
+        }
+        
+        //r1 = A U B U {0, 0, 0...}, los quitamos creando R1
+        int R1[] = new int [posColocar];
+        for (int i = 0; i < R1.length; i++) {
+            R1[i] = r1[i];
+        }
+        //R1 = A U B
+        
+        //Calculamos el conjunto de (A \ C)
+        
+        //r2 tamaño A
+        int r2[] = new int [a.length];
+        int posAlta = a.length;
+        
+        int k = 0;
+        //Buscamos todos los componentes de C en A y los eliminamos de r2
+        for (int i = 0; i < a.length; i++) {
+            boolean estaIncluido = false;
+            for (int j = 0; j < c.length; j++) {
+                if (a[i]==c[j]) {
+                    estaIncluido = true;
+                    posAlta--;
+                }
+            }
+            if (!estaIncluido) {
+                r2[k] = a[i];
+                k++;
+            }
+        }
+        
+        //r2 = A \ C U {0, 0, 0...}, los quitamos creando R2
+        int R2[] = new int [posAlta];
+        for (int i = 0; i < R2.length; i++) {
+            R2[i] = r2[i];
+        }
+        //R2 = A \ C
+        
+        //Entonces el numero de componentes de hacer R1 x R2 = nºComponentes R1 x nºComponentes R2
+        return (R1.length*R2.length);
     }
 
     /*
@@ -215,7 +431,116 @@ class Entrega {
      * Podeu soposar que `a` i `rel` estan ordenats de menor a major (`rel` lexicogràficament).
      */
     static int exercici2(int[] a, int[][] rel) {
-      return -1; // TODO
+        //Obtenemos la reflexiva
+        int [][] reflexiva = generateRel(a,(x, y) -> x.intValue()==y);
+        
+        //Obtenemos la simetrica
+        int [][] simetrica = new int[rel.length][2];
+        
+        for (int i = 0; i < rel.length; i++) {
+            simetrica[i][1] = rel[i][0];
+            simetrica[i][0] = rel[i][1];
+        }
+        
+        //Antes de obtener la transitiva, juntamos todas las anteriores con rel
+        int r1 [][] = juntarRelaciones(rel,simetrica);
+        int r2 [][] = juntarRelaciones(r1,reflexiva);
+        
+        //Una vez obtenida, sacamos la transitiva
+        boolean valoresDiferentes = true;
+        int valorAnterior, valorActual;
+        int [][] transitivaConDuplicados = r2;
+        while(valoresDiferentes){
+            valorAnterior = transitivaConDuplicados.length;
+            transitivaConDuplicados = obtenerTransitiva(transitivaConDuplicados);
+            valorActual = transitivaConDuplicados.length;
+            if(valorAnterior==valorActual){
+                valoresDiferentes = false;
+            }
+        }
+        
+        int clausuraEquiv[][] = eliminarDuplicados(juntarRelaciones(r2,transitivaConDuplicados));
+        
+        return clausuraEquiv.length;
+    }
+
+    static int[][] juntarRelaciones(int [][] a, int [][] b){
+        int resultado [][] = new int [a.length+b.length][2];
+        
+        for (int i = 0; i < a.length; i++) {
+            resultado[i][0] = a[i][0];
+            resultado[i][1] = a[i][1];
+        }
+        //Insertamos simetrica en r1
+        for (int i = a.length; i < a.length+b.length; i++) {
+            resultado[i][0] = b[i-a.length][0];
+            resultado[i][1] = b[i-a.length][1];
+        }
+        
+        return resultado;
+    }
+    
+    public static int[][] eliminarDuplicados(int[][] array) {
+        // Obtener el tamaño del array original
+        int n = array.length;
+
+        // Crear un array temporal para almacenar los resultados sin duplicados
+        int[][] tempArray = new int[n][2];
+        // Contador para la longitud del nuevo array sin duplicados
+        int nuevoLength = 0;
+
+        // Iterar sobre cada fila del array original
+        for (int i = 0; i < n; i++) {
+            boolean estaDuplicado = false;
+            // Comprobar si la fila actual ya ha aparecido antes
+            for (int j = 0; j < nuevoLength; j++) {
+                if (array[i][0] == tempArray[j][0] && array[i][1] == tempArray[j][1]) {
+                    estaDuplicado = true;
+                    break;
+                }
+            }
+            // Si no es duplicada, agregarla al array temporal
+            if (!estaDuplicado) {
+                tempArray[nuevoLength][0] = array[i][0];
+                tempArray[nuevoLength][1] = array[i][1];
+                nuevoLength++;
+            }
+        }
+
+        // Crear un array final con la longitud adecuada para almacenar los resultados sin duplicados
+        int[][] resultado = new int[nuevoLength][2];
+        for (int i = 0; i < nuevoLength; i++) {
+            resultado[i][0] = tempArray[i][0];
+            resultado[i][1] = tempArray[i][1];
+        }
+
+        return resultado;
+    }
+    
+    public static int [][] obtenerTransitiva(int [][] r2){
+        int [][] R1 = new int [r2.length*r2.length][2];
+        int numeroResultados = 0;
+        
+        for (int i = 0; i < r2.length; i++) {
+            int primerNumero = r2[i][0];
+            int segundoNumero = r2[i][1];
+            for (int j = 0; j < r2.length; j++) {
+                if (segundoNumero==r2[j][0]) {
+                    R1 [numeroResultados][0] = primerNumero;
+                    R1 [numeroResultados][1] = r2[j][1];
+                    numeroResultados++;
+                }
+            }
+        }
+        
+        int R2[][] = new int [numeroResultados][2];
+        for (int i = 0; i < R2.length; i++) {
+            for (int j = 0; j < 2; j++) {
+                R2[i][j] = R1[i][j];
+            }
+        }
+        
+        return eliminarDuplicados(R2);
     }
 
     /*
@@ -225,9 +550,95 @@ class Entrega {
      * Podeu soposar que `a` i `rel` estan ordenats de menor a major (`rel` lexicogràficament).
      */
     static int exercici3(int[] a, int[][] rel) {
-      return -1; // TODO
+        //Comprobam si es reflexiva
+        int [][] reflexiva = generateRel(a,(x, y) -> x.intValue()==y);
+        boolean esReflexiva = comprobarRelacion(reflexiva,rel);
+        
+        //Comprobar si es antisimetrica
+        boolean esAntisimetrica = comprobarAntisimetria(a,rel);
+        
+        //Comprobar si es transitiva
+        boolean valoresDiferentes = true;
+        int valorAnterior, valorActual;
+        int [][] transitivaConDuplicados = rel;
+        while(valoresDiferentes){
+            valorAnterior = transitivaConDuplicados.length;
+            transitivaConDuplicados = obtenerTransitiva(transitivaConDuplicados);
+            valorActual = transitivaConDuplicados.length;
+            if(valorAnterior==valorActual){
+                valoresDiferentes = false;
+            }
+        }
+        
+        int transitiva[][] = eliminarDuplicados(juntarRelaciones(rel,transitivaConDuplicados));
+        
+        boolean esTransitiva = comprobarRelacion(transitiva,rel);
+        
+        boolean esOrdenTotal = comprobarOrdenTotal(a, rel);
+        
+        if (esReflexiva && esAntisimetrica && esTransitiva && esOrdenTotal) {
+            return a.length-1;
+        }
+        return -2;
     }
 
+    public static boolean sonTodoTrue(boolean[] array) {
+        for (int i = 0; i < array.length; i++) {
+            if (!array[i]) {
+                return false;  // Encontramos un false, no todos son true
+            }
+        }
+        return true;  // No encontramos ningún false, todos son true
+    }
+    
+    public static boolean comprobarRelacion(int [][] tipoRelacion, int [][] rel){
+        boolean [] partesRelacion = new boolean [tipoRelacion.length];
+        for (int i = 0; i < tipoRelacion.length; i++) {
+            int numeroComprobar = tipoRelacion[i][0];
+            for (int[] rel1 : rel) {
+                if ((numeroComprobar == rel1[0]) && (numeroComprobar == rel1[1])) {
+                    partesRelacion[i] = true;
+                }
+            }
+        }
+        
+        return sonTodoTrue(partesRelacion);
+    }
+    
+    public static boolean comprobarAntisimetria(int[] A, int[][] rel) {
+        for (int[] rel1 : rel) {
+            int a = rel1[0];
+            int b = rel1[1];
+            if (a != b) {
+                for (int[] rel2 : rel) {
+                    if (rel2[0] == b && rel2[1] == a) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    
+    public static boolean comprobarOrdenTotal(int[] a, int[][] rel) {
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length; j++) {
+                if (i != j) {
+                    boolean encontrado = false;
+                    for (int[] rel1 : rel) {
+                        if ((rel1[0] == a[i] && rel1[1] == a[j]) || (rel1[0] == a[j] && rel1[1] == a[i])) {
+                            encontrado = true;
+                            break;
+                        }
+                    }
+                    if (!encontrado) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
     /*
      * Comprovau si les relacions `rel1` i `rel2` són els grafs de funcions amb domini i codomini
@@ -394,7 +805,29 @@ class Entrega {
      * Determinau si el graf és connex. Podeu suposar que `g` no és dirigit.
      */
     static boolean exercici1(int[][] g) {
-      return false; // TO DO
+        int numNodos = g.length;
+        boolean[] nodosVisitados = new boolean[numNodos];
+        //Empezar la recursividad desde el nodo 0
+        recorrerGrafo(0, g, nodosVisitados);
+        //comprobar si se han visitado todos los nodos
+        for (boolean visitado : nodosVisitados) {
+            if (!visitado) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    //Funcion recursiva para recorrer el grafo
+    private static void recorrerGrafo(int nodo, int[][] g, boolean[] visitados) {
+        //Marcamos el nodo actual como visitado
+        visitados[nodo] = true;
+        //Recorre todos los vecinos del nodo visitado
+        for (int vecino : g[nodo]) {
+            if (!visitados[vecino]) {
+                recorrerGrafo(vecino, g, visitados);
+            }
+        }
     }
 
     /*
