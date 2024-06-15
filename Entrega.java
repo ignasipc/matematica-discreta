@@ -42,7 +42,7 @@ import java.util.stream.Stream;
  * Per entregar, posau a continuació els vostres noms i entregau únicament aquest fitxer.
  * - Nom 1:
  * - Nom 2:
- * - Nom 3:
+ * - Nom 3:Asier zubillaga llabres
  *
  * L'entrega es farà a través d'una tasca a l'Aula Digital que obrirem abans de la data que se us
  * hagui comunicat i vos recomanam que treballeu amb un fork d'aquest repositori per seguir més
@@ -648,7 +648,24 @@ class Entrega {
      * lexicogràficament).
      */
     static int[][] exercici4(int[] a, int[][] rel1, int[][] rel2) {
-      return new int[][] {}; // TODO
+        int [][] composicion=new int[a.length][a.length];
+
+        if (rel1.equals(rel2)) {
+          for(int i=0;i<rel1.length;i++){
+            for(int j=1;j<rel1[i].length;j++){
+              if (rel1[i][j]==rel2[i][j-1]) {
+                int p1=rel1[i][j];
+                int p2=rel2[i][j-1];
+                composicion[i][j-1]=p1;
+                composicion[i][j]=p2;
+              }
+            }
+          }
+        }else{
+          return null;
+        }
+    
+        return composicion;
     }
 
     /*
@@ -656,8 +673,35 @@ class Entrega {
      * el seu graf (el de l'inversa). Sino, retornau null.
      */
     static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) {
-      return new int[][] {}; // TODO
-    }
+        Function<Integer, Integer> inverseF = getInverse(f);
+        int[][] reverse=new int[dom.length][dom.length];
+        for(int i=0;i<codom.length;i++){
+        int result=inverseF.apply(codom[i]);
+  
+        boolean esta=false;
+        for (int j=0;j<dom.length;j++){
+          if (result==dom[j]) {
+            esta=true;
+            reverse[i][j]=result;
+          }
+        }
+  
+        if (!esta) {
+          return new int[][] {};
+        }
+      }
+      return reverse; // TODO
+      }
+  
+      public static Function<Integer, Integer> getInverse(Function<Integer, Integer> f) {
+        return x -> {
+          int y = 0;
+          while (f.apply(y) != x) {
+              y++;
+          }
+          return y;
+      };
+      }
 
     /*
      * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
@@ -944,7 +988,25 @@ class Entrega {
      * Calculau el mínim comú múltiple de `a` i `b`.
      */
     static int exercici1(int a, int b) {
-      return -1; // TO DO
+        //variable a devolver
+        int mcm=1;
+        //incremento
+        int i=2;
+
+        while (i<=a || i<=b) {
+            if (a%i==0 || b%i==0) {
+                mcm=mcm*i;
+                if (a%i==0) {
+                    a=a/i;
+                }
+                if (b%i==0) {
+                    b=b/i;
+                }
+            }else{
+                i=i+1;
+            }
+        }
+      return mcm; // TO DO
     }
 
     /*
@@ -957,7 +1019,25 @@ class Entrega {
      * Podeu suposar que `n > 1`. Recordau que no no podeu utilitzar la força bruta.
      */
     static int[] exercici2(int a, int b, int n) {
-      return new int[] {}; // TO DO
+        ArrayList<Integer> solucion=new ArrayList<Integer>();
+
+        int mcd=MCD(a, n);
+  
+        if (b%mcd==0) {
+          for (int i=0;i<n;i++){
+            if ((a*i)%n==b) {
+              solucion.add(i);
+            }
+          }
+          int [] sol=new int[solucion.size()];
+  
+          for(int i=0;i<sol.length;i++){
+            sol[i]=solucion.get(i);
+          }
+          return sol;
+        }
+
+        return new int[]{}; // TO DO
     }
 
     /*
@@ -969,8 +1049,37 @@ class Entrega {
      * té solució.
      */
     static boolean exercici3(int a, int b, int c, int d, int m, int n) {
-      return false; // TO DO
+      boolean sol=false;
+
+      int num1=MCD(a,m);
+
+      int num2=MCD(b, n);
+
+      if ((c % num1)==0 && (d % num2)==0) {
+        if (MCD(m,n)==1) {
+          sol=true;
+        }else{
+          sol=false;
+        }
+        
+      }
+      return sol; 
     }
+
+    static int MCD(int a, int b){
+      
+      while(a!=b) {
+        if (a>b) {
+          a=a-b;
+        }else{
+          b=b-a;
+        }
+      }
+
+      return a;
+    }
+
+  
 
     /*
      * Donats `n` un enter, `k > 0` enter, i `p` un nombre primer, retornau el residu de dividir n^k
@@ -983,7 +1092,14 @@ class Entrega {
      * qüestió de segons independentment de l'entrada.
      */
     static int exercici4(int n, int k, int p) {
-      return -1; // TO DO
+        int umbral=n*(int)Math.pow(p, 2);
+
+        int dividendo=(int)Math.pow(n, k);
+
+        if (dividendo>umbral) {
+            return -1;
+        }
+        return dividendo%p; // TO DO
     }
 
     /*
