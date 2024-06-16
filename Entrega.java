@@ -41,8 +41,8 @@ import java.util.stream.Stream;
  * Podeu fer aquesta entrega en grups de com a màxim 3 persones, i necessitareu com a minim Java 10.
  * Per entregar, posau a continuació els vostres noms i entregau únicament aquest fitxer.
  * - Nom 1:
- * - Nom 2:
- * - Nom 3:Asier zubillaga llabres
+ * - Nom 2:Asier zubillaga llabres
+ * - Nom 3:
  *
  * L'entrega es farà a través d'una tasca a l'Aula Digital que obrirem abans de la data que se us
  * hagui comunicat i vos recomanam que treballeu amb un fork d'aquest repositori per seguir més
@@ -648,24 +648,43 @@ class Entrega {
      * lexicogràficament).
      */
     static int[][] exercici4(int[] a, int[][] rel1, int[][] rel2) {
-        int [][] composicion=new int[a.length][a.length];
+        int n = a.length;
 
-        if (rel1.equals(rel2)) {
-          for(int i=0;i<rel1.length;i++){
-            for(int j=1;j<rel1[i].length;j++){
-              if (rel1[i][j]==rel2[i][j-1]) {
-                int p1=rel1[i][j];
-                int p2=rel2[i][j-1];
-                composicion[i][j-1]=p1;
-                composicion[i][j]=p2;
-              }
+    // Comprobamos que las relaciones son funciones para poder aplicarlas
+      boolean[] domainRel1 = new boolean[n];
+      for (int[] pair : rel1) {
+        int x = pair[0];
+        if (domainRel1[x]) return null; // rel1 is not a function
+        domainRel1[x] = true;
+      }
+
+      boolean[] domainRel2 = new boolean[n];
+      for (int[] pair : rel2) {
+        int x = pair[0];
+        if (domainRel2[x]) return null; // rel2 is not a function
+        domainRel2[x] = true;
+      }
+
+    // Calculamos la composicion
+      ArrayList<int[]> composition = new ArrayList<>();
+      for (int[] pair1 : rel1) {
+        int x = pair1[0];
+        int y = pair1[1];
+        for (int[] pair2 : rel2) {
+            if (pair2[0] == y) {
+                int z = pair2[1];
+                composition.add(new int[]{x, z});
             }
-          }
-        }else{
-          return null;
         }
-    
-        return composicion;
+    }
+
+    // Convertimos la composicion a Array bidimensional
+      int[][] result = new int[composition.size()][2];
+      for (int i = 0; i < composition.size(); i++) {
+        result[i] = composition.get(i);
+      }
+
+      return result;
     }
 
     /*
@@ -673,34 +692,66 @@ class Entrega {
      * el seu graf (el de l'inversa). Sino, retornau null.
      */
     static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) {
-        Function<Integer, Integer> inverseF = getInverse(f);
-        int[][] reverse=new int[dom.length][dom.length];
-        for(int i=0;i<codom.length;i++){
-        int result=inverseF.apply(codom[i]);
-  
-        boolean esta=false;
-        for (int j=0;j<dom.length;j++){
-          if (result==dom[j]) {
-            esta=true;
-            reverse[i][j]=result;
-          }
+        int n = dom.length;
+
+    // Create arrays to store function values and inverse mapping
+      int[] functionValues = new int[n];
+      int[] inverseMapping = new int[n];
+      boolean[] codomSet = new boolean[codom.length];
+
+    // Check if f is injective (one-to-one) and fill the functionValues array
+      for (int i = 0; i < n; i++) {
+        int x = dom[i];
+        int y = f.apply(x);
+
+        // Find index of y in codom
+        int yIndex = -1;
+        for (int j = 0; j < codom.length; j++) {
+            if (codom[j] == y) {
+                yIndex = j;
+                break;
+            }
         }
-  
-        if (!esta) {
-          return new int[][] {};
+        if (yIndex == -1 || functionValues[yIndex] != 0) {
+            return null; // f is not injective or y not in codom
+        }
+
+        functionValues[yIndex] = x + 1; // Use x + 1 to avoid default 0 value conflict
+    }
+
+    // Check if f is surjective (onto)
+      for (int i = 0; i < n; i++) {
+        int x = dom[i];
+        int y = f.apply(x);
+
+        // Find index of y in codom
+        int yIndex = -1;
+        for (int j = 0; j < codom.length; j++) {
+            if (codom[j] == y) {
+                yIndex = j;
+                break;
+            }
+        }
+       
+        if (yIndex == -1 || codomSet[yIndex]) {
+            return null; // f is not surjective or duplicate found
+        }
+
+        codomSet[yIndex] = true;
+        inverseMapping[yIndex] = x;
+    }
+
+    // f is bijective, construct the inverse function graph
+      int[][] inverseGraph = new int[n][2];
+      int index = 0;
+      for (int i = 0; i < codom.length; i++) {
+        if (functionValues[i] != 0) {
+            inverseGraph[index][0] = codom[i];
+            inverseGraph[index][1] = functionValues[i] - 1; // Adjust back to original value
+            index++;
         }
       }
-      return reverse; // TODO
-      }
-  
-      public static Function<Integer, Integer> getInverse(Function<Integer, Integer> f) {
-        return x -> {
-          int y = 0;
-          while (f.apply(y) != x) {
-              y++;
-          }
-          return y;
-      };
+      return inverseGraph;
       }
 
     /*

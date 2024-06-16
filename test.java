@@ -2,7 +2,8 @@ public class test {
 
    public static void main(String[] args) {
     
-    System.out.println(exercici4(-2147483646, 2147483645, 46337));
+    System.out.println(exercici4(2018, 2018, 5) == 4);
+    System.out.println(exercici4(-2147483646, 2147483645, 46337) == 7435);
     
   }
 
