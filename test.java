@@ -10,26 +10,33 @@ public class test {
    
     static int exercici4(int n, int k, int p) {
       int resultado = 1;
-      //cualquier numero elevado a 0 es igual a 1
-      //y el resto de uno entre cualquier numero mayor a el es 1
-      if (k == 0) {
-        return 1;
-    }
 
-    if (n < 0) {
-        n = n % p + p;
-    } else {
-        n = n % p;
-    }
- 
-    while (k > 0) {
-        if (k % 2 == 1) {
-          resultado = (resultado * n) % p;
-        }
-        n = (n * n) % p;
-        k = k/2;
-    }
-    return resultado;
+      // Cualquier número elevado a 0 es igual a 1
+      if (k == 0) {
+          return 1;
+      }
+
+      // Corregir n para que esté dentro del rango [0, p)
+      if (n < 0) {
+          n = n % p + p;
+      } else {
+          n = n % p;
+      }
+
+      while (k > 0) {
+          // Si el exponente es impar, multiplica el resultado por la base
+          if (k % 2 == 1) {
+              resultado = (resultado * n) % p;
+          }
+
+          // Eleva la base al cuadrado
+          n = (n * n) % p;
+
+          // Divide el exponente entre 2
+          k = k / 2;
+      }
+
+      return resultado;
   }
 
     static int MCD(int a, int b){

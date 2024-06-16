@@ -1,12 +1,9 @@
 import java.lang.AssertionError;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /*
  * Aquesta entrega consisteix en implementar tots els mètodes annotats amb "// TODO". L'enunciat de
@@ -40,6 +37,7 @@ import java.util.stream.Stream;
  *
  * Podeu fer aquesta entrega en grups de com a màxim 3 persones, i necessitareu com a minim Java 10.
  * Per entregar, posau a continuació els vostres noms i entregau únicament aquest fitxer.
+ * 
  * - Nom 1:Ignasi Paredes Casasnovas
  * - Nom 2:Elena Morey Martin
  * - Nom 3:Asier zubillaga llabres 
@@ -648,110 +646,17 @@ class Entrega {
      * lexicogràficament).
      */
     static int[][] exercici4(int[] a, int[][] rel1, int[][] rel2) {
-        int n = a.length;
-
-    // Comprobamos que las relaciones son funciones para poder aplicarlas
-      boolean[] domainRel1 = new boolean[n];
-      for (int[] pair : rel1) {
-        int x = pair[0];
-        if (domainRel1[x]) return null; // rel1 is not a function
-        domainRel1[x] = true;
-      }
-
-      boolean[] domainRel2 = new boolean[n];
-      for (int[] pair : rel2) {
-        int x = pair[0];
-        if (domainRel2[x]) return null; // rel2 is not a function
-        domainRel2[x] = true;
-      }
-
-    // Calculamos la composicion
-      ArrayList<int[]> composition = new ArrayList<>();
-      for (int[] pair1 : rel1) {
-        int x = pair1[0];
-        int y = pair1[1];
-        for (int[] pair2 : rel2) {
-            if (pair2[0] == y) {
-                int z = pair2[1];
-                composition.add(new int[]{x, z});
-            }
-        }
+        return new int[][]{};
+        
     }
 
-    // Convertimos la composicion a Array bidimensional
-      int[][] result = new int[composition.size()][2];
-      for (int i = 0; i < composition.size(); i++) {
-        result[i] = composition.get(i);
-      }
-
-      return result;
-    }
 
     /*
      * Comprovau si la funció `f` amb domini `dom` i codomini `codom` té inversa. Si la té, retornau
      * el seu graf (el de l'inversa). Sino, retornau null.
      */
     static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) {
-        int n = dom.length;
-
-    // Create arrays to store function values and inverse mapping
-      int[] functionValues = new int[n];
-      int[] inverseMapping = new int[n];
-      boolean[] codomSet = new boolean[codom.length];
-
-    // Check if f is injective (one-to-one) and fill the functionValues array
-      for (int i = 0; i < n; i++) {
-        int x = dom[i];
-        int y = f.apply(x);
-
-        // Find index of y in codom
-        int yIndex = -1;
-        for (int j = 0; j < codom.length; j++) {
-            if (codom[j] == y) {
-                yIndex = j;
-                break;
-            }
-        }
-        if (yIndex == -1 || functionValues[yIndex] != 0) {
-            return null; // f is not injective or y not in codom
-        }
-
-        functionValues[yIndex] = x + 1; // Use x + 1 to avoid default 0 value conflict
-    }
-
-    // Check if f is surjective (onto)
-      for (int i = 0; i < n; i++) {
-        int x = dom[i];
-        int y = f.apply(x);
-
-        // Find index of y in codom
-        int yIndex = -1;
-        for (int j = 0; j < codom.length; j++) {
-            if (codom[j] == y) {
-                yIndex = j;
-                break;
-            }
-        }
-       
-        if (yIndex == -1 || codomSet[yIndex]) {
-            return null; // f is not surjective or duplicate found
-        }
-
-        codomSet[yIndex] = true;
-        inverseMapping[yIndex] = x;
-    }
-
-    // f is bijective, construct the inverse function graph
-      int[][] inverseGraph = new int[n][2];
-      int index = 0;
-      for (int i = 0; i < codom.length; i++) {
-        if (functionValues[i] != 0) {
-            inverseGraph[index][0] = codom[i];
-            inverseGraph[index][1] = functionValues[i] - 1; // Adjust back to original value
-            index++;
-        }
-      }
-      return inverseGraph;
+        return new int[][]{};
       }
 
     /*
@@ -1218,26 +1123,33 @@ class Entrega {
      */
     static int exercici4(int n, int k, int p) {
         int resultado = 1;
-      //cualquier numero elevado a 0 es igual a 1
-      //y el resto de uno entre cualquier numero mayor a el es 1
-      if (k == 0) {
-        return 1;
-    }
 
-    if (n < 0) {
-        n = n % p + p;
-    } else {
-        n = n % p;
-    }
- 
-    while (k > 0) {
-        if (k % 2 == 1) {
-          resultado = (resultado * n) % p;
-        }
-        n = (n * n) % p;
-        k = k/2;
-    }
-    return resultado;
+      // Cualquier número elevado a 0 es igual a 1
+      if (k == 0) {
+          return 1;
+      }
+
+      // Corregir n para que esté dentro del rango [0, p)
+      if (n < 0) {
+          n = n % p + p;
+      } else {
+          n = n % p;
+      }
+
+      while (k > 0) {
+          // Si el exponente es impar, multiplica el resultado por la base
+          if (k % 2 == 1) {
+              resultado = (resultado * n) % p;
+          }
+
+          // Eleva la base al cuadrado
+          n = (n * n) % p;
+
+          // Divide el exponente entre 2
+          k = k / 2;
+      }
+
+      return resultado;
     }
 
     /*
