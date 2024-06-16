@@ -886,7 +886,56 @@ class Entrega {
      * Retornau el nombre mínim de moviments, o -1 si no és possible arribar-hi.
      */
     static int exercici2(int w, int h, int i, int j) {
-      return -1; // TO DO
+        //Si son la misma no movemos la ficha
+        if (i == j) {
+            return 0;
+        }
+        
+        //Todos los posibles movimientos del caballo
+        int[][] movimientos = {{-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}};
+        
+        //Obtener la posicion de x e y
+        int posicionCaballoX = i % w, posicionCaballoY = i / w;
+        int posicionObjetivoX = j % w, posicionObjetivoY = j / w;
+        
+        //Matriz para señalar las casillas visitadas
+        boolean[][] visitado = new boolean[h][w];
+        visitado[posicionCaballoY][posicionCaballoX] = true;
+        
+        int[] numeroMinimoMovimientos = new int[]{Integer.MAX_VALUE};
+        
+        //Obtenemos la solucion con recursividad
+        encontrarMinimaSolucion(posicionCaballoX, posicionCaballoY, posicionObjetivoX, posicionObjetivoY, w, h, movimientos, visitado, 0, numeroMinimoMovimientos);
+
+        //Si no ha cambiado, no ha encontrado solucion, devuelve -1, en caso contrario, devuelve el numero minimo de movimientos
+        return numeroMinimoMovimientos[0] == Integer.MAX_VALUE ? -1 : numeroMinimoMovimientos[0];
+    }
+    
+    static void encontrarMinimaSolucion(int xInicial, int yInicial, int xFinal, int yFinal, int w, int h, int[][] movimientos, boolean[][] visitado, int numeroMovimientos, int [] numeroMinimoMovimientos) {
+        //Si se llega a la casilla objetivo y es menor al anterior, actualizar el resultado
+        if((xInicial == xFinal) && (yInicial == yFinal)) {
+            if(numeroMovimientos < numeroMinimoMovimientos[0]) {
+                numeroMinimoMovimientos[0] = numeroMovimientos;
+            }
+            return;
+        }
+        
+        // Intentar todos los movimientos posibles del caballo
+        for(int[] movimiento : movimientos) {
+            int nuevoX = xInicial + movimiento[0];
+            int nuevoY = yInicial + movimiento[1];
+            
+            //Podamos el arbol quitando los ya visitados
+            if(esValido(nuevoX, nuevoY, w, h) && !visitado[nuevoY][nuevoX]) {
+                visitado[nuevoY][nuevoX] = true;
+                encontrarMinimaSolucion(nuevoX, nuevoY, xFinal, yFinal, w, h, movimientos, visitado, numeroMovimientos + 1, numeroMinimoMovimientos);
+                visitado[nuevoY][nuevoX] = false;
+            }
+        }
+    }
+    
+    public static boolean esValido(int x, int y, int w, int h) {
+        return ((x >= 0) && (x < w) && (y >= 0) && (y < h));
     }
 
     /*
