@@ -994,7 +994,32 @@ class Entrega {
      * abans (o igual) que el vèrtex `v` al recorregut en preordre de l'arbre.
      */
     static boolean exercici3(int[][] g, int r, int u, int v) {
-      return false; // TO DO
+        int[] recorregutEnPreordre = new int[g.length];
+        int[] posicioRecorregut = {0};
+        
+        recorregutRecursiu(g, r, recorregutEnPreordre, posicioRecorregut);
+        
+        int posicioU = 0, posicioV = 0;
+        for (int i = 0; i < recorregutEnPreordre.length; i++) {
+            if (recorregutEnPreordre[i] == u) {
+                posicioU = i;
+            }
+            if (recorregutEnPreordre[i] == v) {
+                posicioV = i;
+            }
+        }
+        
+        return posicioU <= posicioV;
+    }
+    
+    private static void recorregutRecursiu(int[][] g, int r, int[] recorregutEnPreordre, int[] posicioRecorregut) {
+        recorregutEnPreordre[posicioRecorregut[0]] = r;
+        
+        posicioRecorregut[0]++;
+        
+        for (int i = 0; i < g[r].length; i++) {
+            recorregutRecursiu(g, g[r][i], recorregutEnPreordre, posicioRecorregut);
+        }
     }
 
     /*
