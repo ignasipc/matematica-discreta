@@ -42,7 +42,7 @@ import java.util.stream.Stream;
  * Per entregar, posau a continuació els vostres noms i entregau únicament aquest fitxer.
  * - Nom 1:Ignasi Paredes Casasnovas
  * - Nom 2:Elena Morey Martin
- * - Nom 3:Asier zubillaga llabres 
+ * - Nom 3:Asier Zubillaga Llabres 
  *
  * L'entrega es farà a través d'una tasca a l'Aula Digital que obrirem abans de la data que se us
  * hagui comunicat i vos recomanam que treballeu amb un fork d'aquest repositori per seguir més
