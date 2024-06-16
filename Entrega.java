@@ -1092,14 +1092,27 @@ class Entrega {
      * qüestió de segons independentment de l'entrada.
      */
     static int exercici4(int n, int k, int p) {
-        int umbral=n*(int)Math.pow(p, 2);
+        int resultado = 1;
+      //cualquier numero elevado a 0 es igual a 1
+      //y el resto de uno entre cualquier numero mayor a el es 1
+      if (k == 0) {
+        return 1;
+    }
 
-        int dividendo=(int)Math.pow(n, k);
-
-        if (dividendo>umbral) {
-            return -1;
+    if (n < 0) {
+        n = n % p + p;
+    } else {
+        n = n % p;
+    }
+ 
+    while (k > 0) {
+        if (k % 2 == 1) {
+          resultado = (resultado * n) % p;
         }
-        return dividendo%p; // TO DO
+        n = (n * n) % p;
+        k = k/2;
+    }
+    return resultado;
     }
 
     /*

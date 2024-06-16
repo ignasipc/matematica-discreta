@@ -1,57 +1,35 @@
-import java.lang.AssertionError;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
-/**
- * test
- */
 public class test {
 
    public static void main(String[] args) {
-    exercici2(2, 2, 4);
+    
+    System.out.println(exercici4(-2147483646, 2147483645, 46337));
     
   }
 
-   /*
-     * Trobau totes les solucions de l'equació
-     *
-     *   a·x ≡ b (mod n)
-     *
-     * donant els seus representants entre 0 i n-1.
-     *
-     * Podeu suposar que `n > 1`. Recordau que no no podeu utilitzar la força bruta.
-     */
-    static int[] exercici2(int a, int b, int n) {
-      ArrayList<Integer> solucion=new ArrayList<Integer>();
-
-      int mcd=MCD(a, n);
-
-      if (b%mcd==0) {
-        for (int i=0;i<n;i++){
-          if ((a*i)%n==b) {
-            solucion.add(i);
-          }
-        }
-        int [] sol=new int[solucion.size()];
-
-        for(int i=0;i<sol.length;i++){
-          sol[i]=solucion.get(i);
-        }
-        return sol;
-      }
-
-      
-
-      return new int[]{}; // TO DO
+   
+    static int exercici4(int n, int k, int p) {
+      int resultado = 1;
+      //cualquier numero elevado a 0 es igual a 1
+      //y el resto de uno entre cualquier numero mayor a el es 1
+      if (k == 0) {
+        return 1;
     }
+
+    if (n < 0) {
+        n = n % p + p;
+    } else {
+        n = n % p;
+    }
+ 
+    while (k > 0) {
+        if (k % 2 == 1) {
+          resultado = (resultado * n) % p;
+        }
+        n = (n * n) % p;
+        k = k/2;
+    }
+    return resultado;
+  }
 
     static int MCD(int a, int b){
       
@@ -66,7 +44,7 @@ public class test {
       return a;
     }
 
-  
+    
     
 }
   
