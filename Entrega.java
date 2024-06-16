@@ -1,9 +1,12 @@
 import java.lang.AssertionError;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /*
  * Aquesta entrega consisteix en implementar tots els mètodes annotats amb "// TODO". L'enunciat de
@@ -37,7 +40,6 @@ import java.util.function.Predicate;
  *
  * Podeu fer aquesta entrega en grups de com a màxim 3 persones, i necessitareu com a minim Java 10.
  * Per entregar, posau a continuació els vostres noms i entregau únicament aquest fitxer.
- * 
  * - Nom 1:Ignasi Paredes Casasnovas
  * - Nom 2:Elena Morey Martin
  * - Nom 3:Asier zubillaga llabres 
@@ -112,7 +114,7 @@ class Entrega {
      * És cert que ∀x : P(x) -> ∃!y : Q(x,y) ?
      */
     static boolean exercici2(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
-      boolean resultado [] = new boolean [universe.length];
+        boolean resultado [] = new boolean [universe.length];
         for (int i = 0; i < universe.length; i++) { //∀x
             if (p.test(universe[i])) {              //:P(x) == true
                 int existe = 0;
@@ -123,11 +125,8 @@ class Entrega {
                     }
                 }
                 
-                if (existe == 1) {                  //∃!y : Q(x,y) == true
-                    resultado[i] = true;
-                }else{                              //∃!y : Q(x,y) == false
-                    resultado[i] = false;
-                }
+                resultado[i] = existe == 1; //∃!y : Q(x,y) == true
+                                            //∃!y : Q(x,y) == false
             }else{                                  //:P(x) == false, sempre es true
                 resultado[i] = true;
             }
@@ -140,11 +139,7 @@ class Entrega {
             }
         }
         
-        if (contadorTrue == resultado.length) {
-            return true;
-        }else{
-            return false;
-        }
+        return contadorTrue == resultado.length;
     }
 
     /*
@@ -165,11 +160,7 @@ class Entrega {
                     numeroTrues++;
                 }
             }
-            if (numeroTrues==universe.length) {             //Si es cierto ∀y dada una x, 
-                resultado[i] = true;
-            }else{
-                resultado[i] = false;
-            }
+            resultado[i] = numeroTrues==universe.length; //Si es cierto ∀y dada una x,
         }
         //Comprobamos cuantas veces es cierto
         int contadorTrue = 0;
@@ -179,11 +170,7 @@ class Entrega {
             }
         }
         //Es cierto si existe 1 o mas veces
-        if (contadorTrue > 0) {
-            return true;
-        }else{
-            return false;
-        }
+        return contadorTrue > 0;
     }
 
     /*
@@ -198,17 +185,11 @@ class Entrega {
             for (int y = 0; y < universe.length; y++) {
                 for (int z = 0; z < universe.length; z++) {
                     if (!p.test(universe[x], universe[z])) {                    //Si P(x,z) = False
-                        if (!q.test(universe[y], universe[z])) {                //Si Q(y,z) = False
-                            resultadosZ[z] = true;
-                        }else{                                                  //Si Q(y,z) = True
-                            resultadosZ[z] = false;
-                        }
-                    }else{                                                      //Si Q(y,z) = True
-                        if (!q.test(universe[y], universe[z])) {                //Si Q(y,z) = False
-                            resultadosZ[z] = false;
-                        }else{                                                  //Si Q(y,z) = True
-                            resultadosZ[z] = true;
-                        }
+                        resultadosZ[z] = !q.test(universe[y], universe[z]); //Si Q(y,z) = False
+                                                                            //Si Q(y,z) = True
+                    }else{                                                 //Si Q(y,z) = True
+                        resultadosZ[z] = q.test(universe[y], universe[z]); //Si Q(y,z) = False
+                        //Si Q(y,z) = True
                     }
                 }
                 int contadorZ = 0;
@@ -217,11 +198,7 @@ class Entrega {
                         contadorZ++;
                     }
                 }
-                if (contadorZ==universe.length) {                               //Comprobamos que se cumple ∀z
-                    resultadosY[y] = true;
-                }else{
-                    resultadosY[y] = false;
-                }
+                resultadosY[y] = contadorZ==universe.length; //Comprobamos que se cumple ∀z
             }
             int contadorY = 0;
             for (int i = 0; i < universe.length; i++) {
@@ -229,11 +206,7 @@ class Entrega {
                     contadorY++;
                 }
             }
-            if (contadorY==1) {                                                 //Comprobamos que se cumple ∃!y
-                resultadosX[x] = true;
-            }else{
-                resultadosX[x] = false;
-            }
+            resultadosX[x] = contadorY==1; //Comprobamos que se cumple ∃!y
         }
         int contadorX = 0;
         for (int i = 0; i < universe.length; i++) {
@@ -241,11 +214,7 @@ class Entrega {
                 contadorX++;
             }
         }
-        if (contadorX > 0) {                                                    //Comprobamos que se cumple ∃x 1 o mas x
-            return true;
-        }else{
-            return false;
-        }
+        return contadorX > 0; //Comprobamos que se cumple ∃x 1 o mas x
     }
 
     /*
@@ -519,13 +488,13 @@ class Entrega {
         int [][] R1 = new int [r2.length*r2.length][2];
         int numeroResultados = 0;
         
-        for (int i = 0; i < r2.length; i++) {
-            int primerNumero = r2[i][0];
-            int segundoNumero = r2[i][1];
-            for (int j = 0; j < r2.length; j++) {
-                if (segundoNumero==r2[j][0]) {
+        for (int[] r21 : r2) {
+            int primerNumero = r21[0];
+            int segundoNumero = r21[1];
+            for (int[] r22 : r2) {
+                if (segundoNumero == r22[0]) {
                     R1 [numeroResultados][0] = primerNumero;
-                    R1 [numeroResultados][1] = r2[j][1];
+                    R1 [numeroResultados][1] = r22[1];
                     numeroResultados++;
                 }
             }
@@ -646,18 +615,16 @@ class Entrega {
      * lexicogràficament).
      */
     static int[][] exercici4(int[] a, int[][] rel1, int[][] rel2) {
-        return new int[][]{};
-        
+      return new int[][] {}; // TODO
     }
-
 
     /*
      * Comprovau si la funció `f` amb domini `dom` i codomini `codom` té inversa. Si la té, retornau
      * el seu graf (el de l'inversa). Sino, retornau null.
      */
     static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) {
-        return new int[][]{};
-      }
+      return new int[][] {}; // TODO
+    }
 
     /*
      * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
@@ -917,7 +884,7 @@ class Entrega {
         return posicioU <= posicioV;
     }
     
-    private static void recorregutRecursiu(int[][] g, int r, int[] recorregutEnPreordre, int[] posicioRecorregut) {
+    static void recorregutRecursiu(int[][] g, int r, int[] recorregutEnPreordre, int[] posicioRecorregut) {
         recorregutEnPreordre[posicioRecorregut[0]] = r;
         
         posicioRecorregut[0]++;
@@ -935,7 +902,28 @@ class Entrega {
      * L'altura d'un arbre arrelat és la major distància de l'arrel a les fulles.
      */
     static int exercici4(int[] preord, int[] d) {
-      return -1; // TO DO
+        int[] posicionRecorrido = {0};
+        return recorrerEnPreordre(preord, d, posicionRecorrido);
+    }
+
+    static int recorrerEnPreordre(int[] preord, int[] d, int[] posicionRecorrido) {
+        int vertice = preord[posicionRecorrido[0]];
+        int orden = d[vertice];
+
+        posicionRecorrido[0]++;
+        if (orden == 0) {
+            return 0;
+        }
+
+        int alturaMaxima = 0;
+        for (int i = 0; i < orden; i++) {
+            int altura = recorrerEnPreordre(preord, d, posicionRecorrido);
+            if (alturaMaxima < altura) {
+                alturaMaxima = altura;
+            }
+        }
+
+        return 1 + alturaMaxima;
     }
 
     /*
@@ -1036,7 +1024,7 @@ class Entrega {
                 i=i+1;
             }
         }
-      return mcm; // TO DO
+        return mcm; // TO DO
     }
 
     /*
@@ -1049,7 +1037,7 @@ class Entrega {
      * Podeu suposar que `n > 1`. Recordau que no no podeu utilitzar la força bruta.
      */
     static int[] exercici2(int a, int b, int n) {
-        ArrayList<Integer> solucion=new ArrayList<Integer>();
+        ArrayList<Integer> solucion=new ArrayList<>();
 
         int mcd=MCD(a, n);
   
@@ -1079,23 +1067,18 @@ class Entrega {
      * té solució.
      */
     static boolean exercici3(int a, int b, int c, int d, int m, int n) {
-      boolean sol=false;
+        boolean sol=false;
 
-      int num1=MCD(a,m);
+        int num1=MCD(a,m);
 
-      int num2=MCD(b, n);
+        int num2=MCD(b, n);
 
-      if ((c % num1)==0 && (d % num2)==0) {
-        if (MCD(m,n)==1) {
-          sol=true;
-        }else{
-          sol=false;
+        if ((c % num1)==0 && (d % num2)==0) {
+            sol = MCD(m,n)==1;
         }
-        
-      }
-      return sol; 
+        return sol; 
     }
-
+    
     static int MCD(int a, int b){
       
       while(a!=b) {
@@ -1123,33 +1106,26 @@ class Entrega {
      */
     static int exercici4(int n, int k, int p) {
         int resultado = 1;
+        //cualquier numero elevado a 0 es igual a 1
+        //y el resto de uno entre cualquier numero mayor a el es 1
+        if (k == 0) {
+            return 1;
+        }
 
-      // Cualquier número elevado a 0 es igual a 1
-      if (k == 0) {
-          return 1;
-      }
+        if (n < 0) {
+            n = n % p + p;
+        } else {
+            n = n % p;
+        }
 
-      // Corregir n para que esté dentro del rango [0, p)
-      if (n < 0) {
-          n = n % p + p;
-      } else {
-          n = n % p;
-      }
-
-      while (k > 0) {
-          // Si el exponente es impar, multiplica el resultado por la base
-          if (k % 2 == 1) {
-              resultado = (resultado * n) % p;
-          }
-
-          // Eleva la base al cuadrado
-          n = (n * n) % p;
-
-          // Divide el exponente entre 2
-          k = k / 2;
-      }
-
-      return resultado;
+        while (k > 0) {
+            if (k % 2 == 1) {
+                resultado = (resultado * n) % p;
+            }
+            n = (n * n) % p;
+            k = k/2;
+        }
+        return resultado;
     }
 
     /*
